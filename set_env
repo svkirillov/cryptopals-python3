@@ -1,0 +1,3 @@
+current_dir=$(pwd)
+source ./cryptopalsvenv/bin/activate
+export PYTHONPATH="$current_dir"
