@@ -1,0 +1,7 @@
+# .gitignore
+
+.idea
+
+cryptopalsvenv
+**/__pycache__
+.pytest_cache
