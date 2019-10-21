@@ -5,11 +5,18 @@ This are my solutions to the [Cryptopals cryptographic challenges](https://crypt
 ## How to run
 
 ```sh
+# Clone the git repository and change directory
+$ git clone https://github.com/svkirillov/cryptopals-python3.git
+$ cd cryptopals-python3
+
 # Create the virtual environment
 $ python3 -m venv cryptopalsvenv
 
 # Activate the virtual environment
 $ source set_env
+
+# Install the dependecies
+$ pip3 install -r requirements.txt
 
 # Do something
 $ ...
