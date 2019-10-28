@@ -24,15 +24,25 @@ def gen_random_bytes(size: int = 16) -> bytes:
 
 
 def pkcs7_padding_add(bytes_: bytes, block_size: int = 16) -> bytes:
+    assert block_size <= 256, "Bad block size"
+
     padding = block_size - len(bytes_) % block_size
     return bytes_ + bytes([padding] * padding)
 
 
-def pkcs7_padding_del(bytes_: bytes) -> bytes:
+def pkcs7_padding_del(bytes_: bytes, block_size: int = 16) -> bytes:
+    assert block_size <= 256, "Bad block size"
+    assert (
+        len(bytes_) % block_size == 0
+    ), "Data size is not a multiple of the block size"
+
     index = len(bytes_) - 1
     padding = bytes_[index]
 
-    for i in range(index, index - padding, -1):
+    if padding == 0 or padding > block_size:
+        raise PKCS7BadPadding(bytes_[-1:])
+
+    for i in range(index - 1, index - padding, -1):
         if bytes_[i] != padding:
             raise PKCS7BadPadding(bytes_[-padding:])
 
@@ -77,4 +87,4 @@ def aes_cbc_decrypt(cipher: bytes, key: bytes, iv: bytes) -> bytes:
             aes.decrypt(cipher_blocks[i]), cipher_blocks[i - 1]
         )
 
-    return pkcs7_padding_del(plain)
+    return pkcs7_padding_del(plain, len(key))
