@@ -9,7 +9,7 @@ _IV = aes.gen_random_bytes(16)
 
 
 def _parse_cookie(string: str) -> dict:
-    return {k: unquote(v) for k, v in [s.split("=") for s in string.split(";")]}
+    return {k: unquote(v) for k, v in [s.split("=", 1) for s in string.split(";")]}
 
 
 def _get_token(user_data: str) -> bytes:
