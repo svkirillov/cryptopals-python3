@@ -1,6 +1,6 @@
 # Cryptopals
 
-This are my solutions to the [Cryptopals cryptographic challenges](https://cryptopals.com/).
+These are my solutions to the [Cryptopals cryptographic challenges](https://cryptopals.com/).
 
 ## How to run
 
