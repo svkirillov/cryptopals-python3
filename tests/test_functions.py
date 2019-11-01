@@ -2,7 +2,6 @@
 
 import random
 
-from Crypto.Cipher import AES
 from Crypto.Util import Padding
 
 from functions import xor, aes
@@ -45,51 +44,91 @@ class TestFunctions:
         assert c == a, "The result does not match the expected value"
 
     def test_aes_ecb_encrypt(self):
-        plain = aes.gen_random_bytes(random.randint(32, 48))
-        key = aes.gen_random_bytes()
+        # Test vectors from NIST Special Publication 800-38A 2001 Edition
 
-        cipher = aes.aes_ecb_encrypt(plain, key)
+        key = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
+        pt = bytes.fromhex(
+            "6bc1bee22e409f96e93d7e117393172a"
+            "ae2d8a571e03ac9c9eb76fac45af8e51"
+            "30c81c46a35ce411e5fbc1191a0a52ef"
+            "f69f2445df4f9b17ad2b417be66c3710"
+        )
+        ct = bytes.fromhex(
+            "3ad77bb40d7a3660a89ecaf32466ef97"
+            "f5d3d58503b9699de785895a96fdbaaf"
+            "43b1cd7f598ece23881b00e3ed030688"
+            "7b0c785e27e8ad3f8223207104725dd4"
+            "a254be88e037ddd9d79fb6411c3f9df8"  # Padding block
+        )
 
-        ref_aes = AES.new(key, AES.MODE_ECB)
-        plain_with_pad = aes.pkcs7_padding_add(plain)
-        cipher_ref = ref_aes.encrypt(plain_with_pad)
+        result = aes.aes_ecb_encrypt(pt, key)
 
-        assert cipher == cipher_ref, "The result does not match the expected value"
+        assert result == ct, "The result does not match the expected value"
 
     def test_aes_ecb_decrypt(self):
-        plain = aes.gen_random_bytes(random.randint(32, 48))
-        key = aes.gen_random_bytes()
+        # Test vectors from NIST Special Publication 800-38A 2001 Edition
 
-        ref_aes = AES.new(key, AES.MODE_ECB)
-        plain_with_pad = aes.pkcs7_padding_add(plain)
-        cipher = ref_aes.encrypt(plain_with_pad)
+        key = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
+        ct = bytes.fromhex(
+            "3ad77bb40d7a3660a89ecaf32466ef97"
+            "f5d3d58503b9699de785895a96fdbaaf"
+            "43b1cd7f598ece23881b00e3ed030688"
+            "7b0c785e27e8ad3f8223207104725dd4"
+            "a254be88e037ddd9d79fb6411c3f9df8"  # Padding block
+        )
+        pt = bytes.fromhex(
+            "6bc1bee22e409f96e93d7e117393172a"
+            "ae2d8a571e03ac9c9eb76fac45af8e51"
+            "30c81c46a35ce411e5fbc1191a0a52ef"
+            "f69f2445df4f9b17ad2b417be66c3710"
+        )
 
-        pt = aes.aes_ecb_decrypt(cipher, key)
+        result = aes.aes_ecb_decrypt(ct, key)
 
-        assert pt == plain, "The result does not match the expected value"
+        assert result == pt, "The result does not match the expected value"
 
     def test_aes_cbc_encrypt(self):
-        plain = aes.gen_random_bytes(random.randint(32, 48))
-        key = aes.gen_random_bytes()
-        iv = aes.gen_random_bytes()
+        # Test vectors from NIST Special Publication 800-38A 2001 Edition
 
-        cipher = aes.aes_cbc_encrypt(plain, key, iv)
+        key = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
+        iv = bytes.fromhex("000102030405060708090a0b0c0d0e0f")
+        pt = bytes.fromhex(
+            "6bc1bee22e409f96e93d7e117393172a"
+            "ae2d8a571e03ac9c9eb76fac45af8e51"
+            "30c81c46a35ce411e5fbc1191a0a52ef"
+            "f69f2445df4f9b17ad2b417be66c3710"
+        )
+        ct = bytes.fromhex(
+            "7649abac8119b246cee98e9b12e9197d"
+            "5086cb9b507219ee95db113a917678b2"
+            "73bed6b8e3c1743b7116e69e22229516"
+            "3ff1caa1681fac09120eca307586e1a7"
+            "8cb82807230e1321d3fae00d18cc2012"  # Padding block
+        )
 
-        ref_aes = AES.new(key, AES.MODE_CBC, iv)
-        plain_with_pad = aes.pkcs7_padding_add(plain)
-        cipher_ref = ref_aes.encrypt(plain_with_pad)
+        result = aes.aes_cbc_encrypt(pt, key, iv)
 
-        assert cipher == cipher_ref, "The result does not match the expected value"
+        assert result == ct, "The result does not match the expected value"
 
     def test_aes_cbc_decrypt(self):
-        plain = aes.gen_random_bytes(random.randint(32, 48))
-        key = aes.gen_random_bytes()
-        iv = aes.gen_random_bytes()
+        # Test vectors from NIST Special Publication 800-38A 2001 Edition
 
-        ref_aes = AES.new(key, AES.MODE_CBC, iv)
-        plain_with_pad = aes.pkcs7_padding_add(plain)
-        cipher = ref_aes.encrypt(plain_with_pad)
+        key = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
+        iv = bytes.fromhex("000102030405060708090a0b0c0d0e0f")
+        ct = bytes.fromhex(
+            "7649abac8119b246cee98e9b12e9197d"
+            "5086cb9b507219ee95db113a917678b2"
+            "73bed6b8e3c1743b7116e69e22229516"
+            "3ff1caa1681fac09120eca307586e1a7"
+            "8cb82807230e1321d3fae00d18cc2012"  # Padding block
+        )
+        pt = bytes.fromhex(
+            "6bc1bee22e409f96e93d7e117393172a"
+            "ae2d8a571e03ac9c9eb76fac45af8e51"
+            "30c81c46a35ce411e5fbc1191a0a52ef"
+            "f69f2445df4f9b17ad2b417be66c3710"
+        )
 
-        pt = aes.aes_cbc_decrypt(cipher, key, iv)
+        result = aes.aes_cbc_decrypt(ct, key, iv)
 
-        assert pt == plain, "The result does not match the expected value"
+        assert result == pt, "The result does not match the expected value"
