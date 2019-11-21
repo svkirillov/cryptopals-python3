@@ -47,7 +47,7 @@ def _attack(iv: bytes, ct: bytes) -> bytes:
     pt = b""
 
     for i in reversed(range(1, len(cipher_blocks))):
-        ct_block_pre_xor = cipher_blocks[i - 1]
+        ct_block_previous = cipher_blocks[i - 1]
         ct_block_current = cipher_blocks[i]
         intermediate_block = b""
 
@@ -67,7 +67,7 @@ def _attack(iv: bytes, ct: bytes) -> bytes:
                     break
 
             intermediate_block = bytes([n ^ (16 - j)]) + intermediate_block
-            pt = bytes([ct_block_pre_xor[j] ^ int(intermediate_block[0])]) + pt
+            pt = bytes([ct_block_previous[j] ^ int(intermediate_block[0])]) + pt
 
     return aes.pkcs7_padding_del(pt)
 
