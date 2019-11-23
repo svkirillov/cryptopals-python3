@@ -3,7 +3,7 @@
 import base64
 import pathlib
 
-from functions import xor
+from functions.xor import guess_key_length, bruteforce_xor_multi_byte_key
 
 
 RESULT = b"Terminator X: Bring the noise"
@@ -13,8 +13,8 @@ def challenge06(path: str) -> bytes:
     with open(path) as file:
         cipher = base64.b64decode(file.read())
 
-    keysize = xor.guess_key_length(cipher)
-    key = xor.bruteforce_xor_multi_byte_key(cipher, keysize)
+    keysize = guess_key_length(cipher)
+    key = bruteforce_xor_multi_byte_key(cipher, keysize)
 
     return key
 

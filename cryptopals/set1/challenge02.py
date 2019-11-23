@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from functions import xor
+from functions.xor import xor_byte_arrays
 
 
 BYTES_A = bytes.fromhex("1c0111001f010100061a024b53535009181c")
@@ -9,7 +9,7 @@ RESULT = bytes.fromhex("746865206b696420646f6e277420706c6179")
 
 
 def challenge02(first: bytes, second: bytes) -> bytes:
-    return xor.xor_byte_arrays(first, second)
+    return xor_byte_arrays(first, second)
 
 
 if __name__ == "__main__":

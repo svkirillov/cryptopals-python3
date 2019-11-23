@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 from urllib.parse import quote, unquote
-from functions import aes, xor
+
+from functions.xor import xor_byte_arrays
+from functions.aes import AESCipher, gen_random_bytes, pkcs7_unpad, pkcs7_pad
 
 
-_KEY = aes.gen_random_bytes(16)
-_IV = aes.gen_random_bytes(16)
+_cbc = AESCipher(AESCipher.MODE_CBC, gen_random_bytes(16), iv=gen_random_bytes(16))
 
 
 def _parse_cookie(string: str) -> dict:
@@ -17,11 +18,11 @@ def _get_token(user_data: str) -> bytes:
     suffix = ";comment2=%20like%20a%20pound%20of%20bacon"
     token = prefix + quote(user_data) + suffix
 
-    return aes.aes_cbc_encrypt(token.encode("latin"), _KEY, _IV)
+    return _cbc.encrypt(pkcs7_pad(token.encode("latin")))
 
 
 def _is_admin(token: bytes) -> bool:
-    decrypted_token = aes.aes_cbc_decrypt(token, _KEY, _IV)
+    decrypted_token = pkcs7_unpad(_cbc.decrypt(token))
     cookie = _parse_cookie(decrypted_token.decode("latin"))
 
     if cookie.get("admin", False) == "true":
@@ -37,7 +38,7 @@ def _attacker() -> bytes:
     token = _get_token(data)
     ct_block = token[32:48]
     bitflip_block = b"\x7a\x00\x00\x00\x00\x00\x7f\x00\x00\x00\x00\x7a\x00\x00\x7f\x00"
-    fixed_block = xor.xor_byte_arrays(bitflip_block, ct_block)
+    fixed_block = xor_byte_arrays(bitflip_block, ct_block)
     fixed_token = token[:32] + fixed_block + token[48:]
 
     return fixed_token

@@ -4,7 +4,12 @@ import base64
 import random
 from typing import Tuple
 
-from functions import aes
+from functions.aes import (
+    AESCipher,
+    gen_random_bytes,
+    get_blocks,
+    pkcs7_pad,
+)
 
 
 RESULT = b"""Rollin' in my 5.0
@@ -19,13 +24,13 @@ _SECRET = base64.b64decode(
     "dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg"
     "YnkK"
 )
-_PREFIX = aes.gen_random_bytes(random.randint(1, 70))
-_KEY = aes.gen_random_bytes(16)
+_PREFIX = gen_random_bytes(random.randint(1, 70))
+_ecb = AESCipher(AESCipher.MODE_ECB, gen_random_bytes(16))
 
 
 def _encrypt_it(bytes_: bytes) -> bytes:
     pt = _PREFIX + bytes_ + _SECRET
-    ct = aes.aes_ecb_encrypt(pt, _KEY)
+    ct = _ecb.encrypt(pkcs7_pad(pt))
 
     return ct
 
@@ -47,7 +52,7 @@ def _get_info() -> Tuple[int, int, int]:
     # Get prefix length in blocks
     prefix_num_block = 0
     padding = b"\x00" * block_size * 3
-    encrypted_data_blocks = aes.get_blocks(_encrypt_it(padding))
+    encrypted_data_blocks = get_blocks(_encrypt_it(padding))
     for i in range(len(encrypted_data_blocks) - 1):
         if encrypted_data_blocks[i] == encrypted_data_blocks[i + 1]:
             prefix_num_block = i
@@ -56,7 +61,7 @@ def _get_info() -> Tuple[int, int, int]:
     # Get prefix padding
     padding = b"\x00" * block_size * 2
     while True:
-        encrypted_data_blocks = aes.get_blocks(_encrypt_it(padding))
+        encrypted_data_blocks = get_blocks(_encrypt_it(padding))
 
         if (
             encrypted_data_blocks[prefix_num_block]

@@ -2,10 +2,10 @@
 
 from typing import Dict, Union
 
-from functions import aes
+from functions.aes import gen_random_bytes, AESCipher, pkcs7_pad, pkcs7_unpad
 
 
-_KEY = aes.gen_random_bytes(16)
+_ecb = AESCipher(AESCipher.MODE_ECB, gen_random_bytes(16))
 
 
 def _sanitize(s: str) -> str:
@@ -29,7 +29,7 @@ def _profile_for(email: str) -> str:
 
 def _oracle(email: str) -> bytes:
     cookie = bytes(_profile_for(email).encode("ascii"))
-    encrypted_cookie = aes.aes_ecb_encrypt(cookie, _KEY)
+    encrypted_cookie = _ecb.encrypt(pkcs7_pad(cookie))
 
     return encrypted_cookie
 
@@ -42,7 +42,7 @@ def _attacker() -> bytes:
 
 
 def challenge13() -> bool:
-    cookie = _parse_cookie(aes.aes_ecb_decrypt(_attacker(), _KEY).decode("ascii"))
+    cookie = _parse_cookie(pkcs7_unpad(_ecb.decrypt(_attacker())).decode("ascii"))
 
     if cookie["role"] == "admin":
         return True

@@ -2,7 +2,8 @@
 
 import pathlib
 
-from functions import xor, string_score
+from functions.string_score import calc_score
+from functions.xor import xor_byte_arrays, bruteforce_xor_single_byte_key
 
 
 RESULT = b"Now that the party is jumping"
@@ -13,10 +14,10 @@ def challenge04(path: str) -> bytes:
         ciphers = [bytes.fromhex(line) for line in file.readlines()]
 
     strings = [
-        xor.xor_byte_arrays(cipher, xor.bruteforce_xor_single_byte_key(cipher))
+        xor_byte_arrays(cipher, bruteforce_xor_single_byte_key(cipher))
         for cipher in ciphers
     ]
-    msg = max(strings, key=string_score.calc_score).split(b"\n")
+    msg = max(strings, key=calc_score).split(b"\n")
 
     return msg[0]
 

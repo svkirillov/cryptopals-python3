@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from functions import xor
+from functions.xor import bruteforce_xor_single_byte_key, xor_byte_arrays
 
 
 CIPHER_TEXT = bytes.fromhex(
@@ -11,8 +11,8 @@ RESULT = b"Cooking MC's like a pound of bacon"
 
 
 def challenge03(cipher: bytes) -> bytes:
-    key = xor.bruteforce_xor_single_byte_key(cipher)
-    msg = xor.xor_byte_arrays(cipher, key)
+    key = bruteforce_xor_single_byte_key(cipher)
+    msg = xor_byte_arrays(cipher, key)
 
     return msg
 

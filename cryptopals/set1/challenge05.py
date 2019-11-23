@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from functions import xor
+from functions.xor import xor_byte_arrays
 
 
 TEXT = b"""Burning 'em, if you ain't quick and nimble
@@ -15,7 +15,7 @@ RESULT = bytes.fromhex(
 
 
 def challenge05(text: bytes, key: bytes) -> bytes:
-    cipher = xor.xor_byte_arrays(text, key)
+    cipher = xor_byte_arrays(text, key)
 
     return cipher
 

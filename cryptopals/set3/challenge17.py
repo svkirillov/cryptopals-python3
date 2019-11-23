@@ -2,8 +2,14 @@
 
 import base64
 
-from functions import aes
-from functions.aes import PKCS7BadPadding
+from functions.aes import (
+    gen_random_bytes,
+    get_blocks,
+    pkcs7_unpad,
+    pkcs7_pad,
+    PKCS7Error,
+    AESCipher,
+)
 
 
 _STRINGS = tuple(
@@ -22,27 +28,29 @@ _STRINGS = tuple(
     )
 )
 
-_KEY = aes.gen_random_bytes(16)
+_KEY = gen_random_bytes(16)
 
 
 def _encrypt(pt: bytes) -> (bytes, bytes):
-    iv = aes.gen_random_bytes(16)
-    ct = aes.aes_cbc_encrypt(pt, _KEY, iv)
+    iv = gen_random_bytes(16)
+    cbc = AESCipher(AESCipher.MODE_CBC, _KEY, iv=iv)
+    ct = cbc.encrypt(pkcs7_pad(pt))
 
     return iv, ct
 
 
 def _oracle(iv: bytes, ct: bytes) -> bool:
+    cbc = AESCipher(AESCipher.MODE_CBC, _KEY, iv=iv)
     try:
-        aes.aes_cbc_decrypt(ct, _KEY, iv)
-    except PKCS7BadPadding:
+        pkcs7_unpad(cbc.decrypt(ct))
+    except PKCS7Error:
         return False
 
     return True
 
 
 def _attack(iv: bytes, ct: bytes) -> bytes:
-    cipher_blocks = [iv] + aes.get_blocks(ct)
+    cipher_blocks = [iv] + get_blocks(ct)
 
     pt = b""
 
@@ -52,7 +60,7 @@ def _attack(iv: bytes, ct: bytes) -> bytes:
         intermediate_block = b""
 
         for j in reversed(range(16)):
-            ctb_prefix = aes.gen_random_bytes(j)
+            ctb_prefix = gen_random_bytes(j)
             ctb_suffix = b""
 
             for k in range(len(intermediate_block)):
@@ -69,7 +77,7 @@ def _attack(iv: bytes, ct: bytes) -> bytes:
             intermediate_block = bytes([n ^ (16 - j)]) + intermediate_block
             pt = bytes([ct_block_previous[j] ^ int(intermediate_block[0])]) + pt
 
-    return aes.pkcs7_padding_del(pt)
+    return pkcs7_unpad(pt)
 
 
 def challenge17() -> bool:

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-from functions import aes
-from functions.aes import PKCS7BadPadding
+from functions.aes import pkcs7_unpad, PKCS7Error
 
 
 def challenge15() -> bool:
@@ -12,19 +11,19 @@ def challenge15() -> bool:
 
     flag = True
 
-    if aes.pkcs7_padding_del(GOOD) != RESULT:
+    if pkcs7_unpad(GOOD) != RESULT:
         flag = False
 
     try:
-        aes.pkcs7_padding_del(BAD_1)
-    except PKCS7BadPadding:
+        pkcs7_unpad(BAD_1)
+    except PKCS7Error:
         pass
     else:
         flag = False
 
     try:
-        aes.pkcs7_padding_del(BAD_2)
-    except PKCS7BadPadding:
+        pkcs7_unpad(BAD_2)
+    except PKCS7Error:
         pass
     else:
         flag = False

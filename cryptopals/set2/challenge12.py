@@ -3,7 +3,8 @@
 import base64
 from typing import Tuple
 
-from functions import aes
+from functions.aes import gen_random_bytes, AESCipher, pkcs7_pad
+
 
 RESULT = b"""Rollin' in my 5.0
 With my rag-top down so my hair can blow
@@ -17,12 +18,13 @@ _SECRET = base64.b64decode(
     "dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg"
     "YnkK"
 )
-_KEY = aes.gen_random_bytes(16)
+
+_ecb = AESCipher(AESCipher.MODE_ECB, gen_random_bytes(16))
 
 
 def _encrypt_it(bytes_: bytes) -> bytes:
     pt = bytes_ + _SECRET
-    ct = aes.aes_ecb_encrypt(pt, _KEY)
+    ct = _ecb.encrypt(pkcs7_pad(pt))
 
     return ct
 

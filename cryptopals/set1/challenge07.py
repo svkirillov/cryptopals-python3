@@ -3,7 +3,7 @@
 import base64
 import pathlib
 
-from Crypto.Cipher import AES
+from functions.aes import AESCipher
 
 
 RESULT = b"I'm back and I'm ringin' the bell "
@@ -11,7 +11,7 @@ RESULT = b"I'm back and I'm ringin' the bell "
 
 def challenge07(path: str) -> bytes:
     key = b"YELLOW SUBMARINE"
-    cipher = AES.new(key, AES.MODE_ECB)
+    cipher = AESCipher(AESCipher.MODE_ECB, key)
 
     with open(path) as f:
         lines = f.readlines()
