@@ -4,11 +4,11 @@ import random
 
 from Crypto.Util import Padding
 
-from functions.xor import hamming, xor_byte_arrays
+from functions.xor import hamming
 from functions.aes import pkcs7_unpad, pkcs7_pad, gen_random_bytes, AESCipher
 
 
-class TestFunctions:
+class TestXorFunctions:
     def test_hamming(self):
         a = bytes("this is a test".encode("ascii"))
         b = bytes("wokka wokka!!!".encode("ascii"))
@@ -16,6 +16,8 @@ class TestFunctions:
 
         assert c == 37, "The result does not match the expected value"
 
+
+class TestPKCS7:
     def test_pkcs7_padding_add(self):
         a = gen_random_bytes(random.randint(1, 16))
         b = pkcs7_pad(a)
@@ -44,6 +46,8 @@ class TestFunctions:
 
         assert c == a, "The result does not match the expected value"
 
+
+class TestAES:
     def test_aes_ecb_encrypt(self):
         # Test vectors from NIST Special Publication 800-38A 2001 Edition
 
