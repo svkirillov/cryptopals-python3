@@ -1,5 +1,5 @@
 from itertools import cycle, combinations
-from typing import Callable
+from typing import Callable, List
 
 from functions.string_score import calc_score
 
@@ -8,14 +8,21 @@ def xor_byte_arrays(a: bytes, b: bytes) -> bytes:
     return bytes([x ^ y for x, y in zip(a, cycle(b))])
 
 
-def bruteforce_xor_single_byte_key(
+def rank_xor_single_byte_key(
     cipher: bytes, quality_test: Callable[[bytes], float] = calc_score
-) -> bytes:
+) -> List[bytes]:
     plains = [(key, xor_byte_arrays(cipher, bytes([key]))) for key in range(256)]
     rank_keys = sorted(
         plains, key=lambda score: (quality_test(score[1]), score[1]), reverse=True
     )
-    return bytes([rank_keys[0][0]])
+    keys = [bytes([key]) for key, _ in rank_keys]
+    return keys
+
+
+def bruteforce_xor_single_byte_key(
+    cipher: bytes, quality_test: Callable[[bytes], float] = calc_score
+) -> bytes:
+    return rank_xor_single_byte_key(cipher, quality_test)[0]
 
 
 def hamming(a: bytes, b: bytes) -> int:
