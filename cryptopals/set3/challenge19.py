@@ -6,9 +6,9 @@ from functions.aes import gen_random_bytes, AESCipher
 from functions.xor import rank_xor_single_byte_key, xor_byte_arrays
 
 
-_STRINGS = tuple(
+_STRINGS = [
     base64.b64decode(s)
-    for s in (
+    for s in [
         "SSBoYXZlIG1ldCB0aGVtIGF0IGNsb3NlIG9mIGRheQ==",
         "Q29taW5nIHdpdGggdml2aWQgZmFjZXM=",
         "RnJvbSBjb3VudGVyIG9yIGRlc2sgYW1vbmcgZ3JleQ==",
@@ -49,8 +49,8 @@ _STRINGS = tuple(
         "SGUsIHRvbywgaGFzIGJlZW4gY2hhbmdlZCBpbiBoaXMgdHVybiw=",
         "VHJhbnNmb3JtZWQgdXR0ZXJseTo=",
         "QSB0ZXJyaWJsZSBiZWF1dHkgaXMgYm9ybi4=",
-    )
-)
+    ]
+]
 
 _KEY = gen_random_bytes(16)
 _NONCE = b"\x00" * 8
@@ -77,14 +77,13 @@ def challenge19() -> bool:
 
     keystream = bytearray()
 
-    while len(keystream) < max_len:
-        i = len(keystream)
+    for i in range(max_len):
         char_chain = bytes([s[i] for s in secrets if len(s) > i])
         possible_keys = rank_xor_single_byte_key(char_chain)
         key_byte = possible_keys[_FIX_MAP.get(i, 0)]
         keystream += key_byte
 
-    pt = tuple(xor_byte_arrays(s, keystream) for s in secrets)
+    pt = [xor_byte_arrays(s, keystream) for s in secrets]
 
     if pt == _STRINGS:
         return True
