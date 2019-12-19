@@ -16,7 +16,7 @@ $ python3 -m venv cryptopalsvenv
 $ source set_env
 
 # Install the dependecies
-$ pip3 install -r requirements.txt
+$ pip3 install -U -r requirements.txt
 
 # Do something
 $ ...
