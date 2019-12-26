@@ -145,7 +145,7 @@ class TestAES:
     def test_aes_ctr_encrypt(self):
         key = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
         nonce = bytes.fromhex("f0f1f2f3f4f5f6f7")
-        counter = 0
+        counter = 0xF8F9FAFBFCFDFEFF
         pt = bytes.fromhex(
             "6bc1bee22e409f96e93d7e117393172a"
             "ae2d8a571e03ac9c9eb76fac45af8e51"
@@ -153,13 +153,19 @@ class TestAES:
             "f69f2445df4f9b17ad2b417be66c3710"
         )
         ct = bytes.fromhex(
-            "67ee05547499f8bcf0c38324e8605c28"
-            "525d5e12872acb0bc8bc4378d1bd42b1"
-            "58f03c2f330fbaa4c3f99afff5103d83"
-            "77500b263590f755a6fba4f9949eac46"
+            "874d6191b620e3261bef6864990db6ce"
+            "9806f66b7970fdff8617187bb9fffdff"
+            "5ae4df3edbd5d35e5b4f09020db03eab"
+            "1e031dda2fbe03d1792170a0f3009cee"
         )
 
-        cbc = AESCipher(AESCipher.MODE_CTR, key, nonce=nonce, counter=counter)
+        cbc = AESCipher(
+            AESCipher.MODE_CTR,
+            key,
+            nonce=nonce,
+            counter=counter,
+            counter_byteorder="big",
+        )
 
         result = cbc.encrypt(pt)
 
@@ -168,12 +174,12 @@ class TestAES:
     def test_aes_ctr_decrypt(self):
         key = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
         nonce = bytes.fromhex("f0f1f2f3f4f5f6f7")
-        counter = 0
+        counter = 0xF8F9FAFBFCFDFEFF
         ct = bytes.fromhex(
-            "67ee05547499f8bcf0c38324e8605c28"
-            "525d5e12872acb0bc8bc4378d1bd42b1"
-            "58f03c2f330fbaa4c3f99afff5103d83"
-            "77500b263590f755a6fba4f9949eac46"
+            "874d6191b620e3261bef6864990db6ce"
+            "9806f66b7970fdff8617187bb9fffdff"
+            "5ae4df3edbd5d35e5b4f09020db03eab"
+            "1e031dda2fbe03d1792170a0f3009cee"
         )
         pt = bytes.fromhex(
             "6bc1bee22e409f96e93d7e117393172a"
@@ -182,7 +188,13 @@ class TestAES:
             "f69f2445df4f9b17ad2b417be66c3710"
         )
 
-        cbc = AESCipher(AESCipher.MODE_CTR, key, nonce=nonce, counter=counter)
+        cbc = AESCipher(
+            AESCipher.MODE_CTR,
+            key,
+            nonce=nonce,
+            counter=counter,
+            counter_byteorder="big",
+        )
 
         result = cbc.decrypt(ct)
 

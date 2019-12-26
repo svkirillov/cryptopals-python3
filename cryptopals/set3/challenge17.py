@@ -12,9 +12,9 @@ from functions.aes import (
 )
 
 
-_STRINGS = tuple(
+_STRINGS = [
     base64.b64decode(s)
-    for s in (
+    for s in [
         "MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=",
         "MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=",
         "MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw==",
@@ -25,8 +25,8 @@ _STRINGS = tuple(
         "MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8=",
         "MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g=",
         "MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93",
-    )
-)
+    ]
+]
 
 _KEY = gen_random_bytes(16)
 
@@ -41,6 +41,7 @@ def _encrypt(pt: bytes) -> (bytes, bytes):
 
 def _oracle(iv: bytes, ct: bytes) -> bool:
     cbc = AESCipher(AESCipher.MODE_CBC, _KEY, iv=iv)
+
     try:
         pkcs7_unpad(cbc.decrypt(ct))
     except PKCS7Error:
