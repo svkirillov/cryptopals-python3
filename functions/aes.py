@@ -45,7 +45,7 @@ class AESCipher:
         iv: Optional[bytes] = None,
         nonce: Optional[bytes] = None,
         counter: Optional[int] = None,
-        counter_byteorder="little",
+        counter_byteorder: str = "little",
     ) -> None:
         if len(key) not in (16, 24, 32):
             raise AESError(f"wrong key length")
@@ -128,15 +128,16 @@ class AESCipher:
 
         ct = bytes()
 
+        counter = self._counter
+
         for i in range(length):
             ct += xor_byte_arrays(
                 pt_blocks[i],
                 self._aes.encrypt(
-                    self._nonce
-                    + self._counter.to_bytes(8, byteorder=self._counter_byteorder)
+                    self._nonce + counter.to_bytes(8, byteorder=self._counter_byteorder)
                 ),
             )
-            self._counter += 1
+            counter += 1
 
         return ct
 
