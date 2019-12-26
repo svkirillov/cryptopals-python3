@@ -6,7 +6,7 @@ from functions.xor import xor_byte_arrays
 from functions.aes import AESCipher, gen_random_bytes, pkcs7_unpad, pkcs7_pad
 
 
-_cbc = AESCipher(AESCipher.MODE_CBC, gen_random_bytes(16), iv=gen_random_bytes(16))
+_ctr = AESCipher(AESCipher.MODE_CTR, gen_random_bytes(16), nonce=gen_random_bytes(8))
 
 
 def _parse_cookie(string: str) -> dict:
@@ -18,11 +18,11 @@ def _get_token(user_data: str) -> bytes:
     suffix = ";comment2=%20like%20a%20pound%20of%20bacon"
     token = prefix + quote(user_data) + suffix
 
-    return _cbc.encrypt(pkcs7_pad(token.encode("latin")))
+    return _ctr.encrypt(pkcs7_pad(token.encode("latin")))
 
 
 def _is_admin(token: bytes) -> bool:
-    decrypted_token = pkcs7_unpad(_cbc.decrypt(token))
+    decrypted_token = pkcs7_unpad(_ctr.decrypt(token))
     cookie = _parse_cookie(decrypted_token.decode("latin"))
 
     if cookie.get("admin", False) == "true":
@@ -36,19 +36,19 @@ def _attacker() -> bytes:
     # B <-> =   |   hex(ord("B") ^ ord("=")) = '0x7f'
     data = "a" * 16 + "AadminBtrueAabBa"
     token = _get_token(data)
-    ct_block = token[32:48]
+    ct_block = token[48:64]
     bitflip_block = b"\x7a\x00\x00\x00\x00\x00\x7f\x00\x00\x00\x00\x7a\x00\x00\x7f\x00"
     fixed_block = xor_byte_arrays(bitflip_block, ct_block)
-    fixed_token = token[:32] + fixed_block + token[48:]
+    fixed_token = token[:48] + fixed_block + token[64:]
 
     return fixed_token
 
 
-def challenge16() -> bool:
+def challenge26() -> bool:
     return _is_admin(_attacker())
 
 
 if __name__ == "__main__":
-    assert challenge16(), "The result does not match the expected value"
+    assert challenge26(), "The result does not match the expected value"
 
     print("Ok")
