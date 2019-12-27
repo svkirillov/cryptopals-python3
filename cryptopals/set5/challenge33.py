@@ -22,7 +22,7 @@ def challenge33() -> bool:
     msg = b"test"
 
     a = DHClient(p, g)
-    b = DHClient(p, g)
+    b = DHClient(a.p, a.g)
 
     a.gen_session_key(b.public_key)
     b.gen_session_key(a.public_key)
