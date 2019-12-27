@@ -6,7 +6,7 @@ from Crypto.Util import Padding
 
 from functions.xor import hamming
 from functions.aes import pkcs7_unpad, pkcs7_pad, gen_random_bytes, AESCipher
-from functions.sha1 import SHA1
+from functions.sha1 import sha1
 
 
 class TestXorFunctions:
@@ -207,14 +207,10 @@ class TestSHA1:
         msg = b"abc"
         result = "a9993e364706816aba3e25717850c26c9cd0d89d"
 
-        assert (
-            SHA1.hex_digest(msg) == result
-        ), "The result does not match the expected value"
+        assert sha1(msg).hex() == result, "The result does not match the expected value"
 
     def test_sha1_two_block(self):
         msg = b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
         result = "84983e441c3bd26ebaae4aa1f95129e5e54670f1"
 
-        assert (
-            SHA1.hex_digest(msg) == result
-        ), "The result does not match the expected value"
+        assert sha1(msg).hex() == result, "The result does not match the expected value"
