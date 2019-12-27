@@ -3,3 +3,8 @@ class TestSet5:
         from cryptopals.set5.challenge33 import challenge33
 
         assert challenge33(), "The result does not match the expected value"
+
+    def test_challenge34(self):
+        from cryptopals.set5.challenge34 import challenge34
+
+        assert challenge34(), "The result does not match the expected value"

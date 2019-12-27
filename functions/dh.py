@@ -1,4 +1,4 @@
-from math import ceil
+from math import floor
 from random import getrandbits
 from typing import Tuple
 
@@ -19,7 +19,9 @@ class DHClient:
 
     def encrypt_msg(self, msg: bytes) -> Tuple[bytes, bytes]:
         key = sha1(
-            self._session_key.to_bytes(ceil(self._session_key.bit_length() / 8), "big")
+            self._session_key.to_bytes(
+                floor(self._session_key.bit_length() / 8) + 1, "big"
+            )
         )[:16]
         iv = gen_random_bytes(16)
 
@@ -29,7 +31,9 @@ class DHClient:
 
     def decrypt_msg(self, iv: bytes, msg: bytes) -> bytes:
         key = sha1(
-            self._session_key.to_bytes(ceil(self._session_key.bit_length() / 8), "big")
+            self._session_key.to_bytes(
+                floor(self._session_key.bit_length() / 8) + 1, "big"
+            )
         )[:16]
 
         cbc = AESCipher(AESCipher.MODE_CBC, key, iv=iv)
