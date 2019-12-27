@@ -94,3 +94,20 @@ class SHA1:
     @staticmethod
     def hex_digest(data: bytes) -> str:
         return SHA1.digest(data).hex()
+
+
+class SHA1KeyedMAC:
+    def __init__(self, key: bytes):
+        self._key = key
+
+    def digest(self, data: bytes) -> bytes:
+        return SHA1.digest(self._key + data)
+
+    def hex_digest(self, data: bytes) -> str:
+        return SHA1.hex_digest(self._key + data)
+
+    def validate(self, data: bytes, sign: bytes) -> bool:
+        return SHA1.digest(self._key + data) == sign
+
+    def hex_validate(self, data: bytes, sign: str) -> bool:
+        return SHA1.hex_digest(self._key + data) == sign
