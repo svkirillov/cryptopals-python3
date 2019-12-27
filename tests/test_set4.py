@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import pathlib
+from threading import Thread
+from functions.server import start_flask_app
 
 
 class TestSet4:
@@ -30,3 +32,19 @@ class TestSet4:
         from cryptopals.set4.challenge29 import challenge29
 
         assert challenge29(), "The result does not match the expected value"
+
+    def test_challenge31(self):
+        from cryptopals.set4.challenge31 import challenge31
+
+        thread = Thread(target=start_flask_app, daemon=True)
+        thread.start()
+
+        assert challenge31("foo"), "The result does not match the expected value"
+
+    def test_challenge32(self):
+        from cryptopals.set4.challenge32 import challenge32
+
+        thread = Thread(target=start_flask_app, daemon=True)
+        thread.start()
+
+        assert challenge32("foo"), "The result does not match the expected value"
